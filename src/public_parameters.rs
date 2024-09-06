@@ -204,17 +204,17 @@ impl<P: Pairing> PublicParameters<P> {
 
         // Step 2: Compute [Z_W(tau)]_2.
         let order_w = num_table_segments * segment_size;
-        // let domain_w: Radix2EvaluationDomain<P::ScalarField> =
-        //     Radix2EvaluationDomain::<P::ScalarField>::new(order_w)
-        //         .ok_or(Error::FailedToCreateEvaluationDomain)?;
-        let domain_w = create_domain_with_generator(group_gen, order_w as u64)?;
+        let domain_w: Radix2EvaluationDomain<P::ScalarField> =
+            Radix2EvaluationDomain::<P::ScalarField>::new(order_w)
+                .ok_or(Error::FailedToCreateEvaluationDomain)?;
         let g2_affine_zw = vanishing_poly_commitment_affine::<P::G2>(&g2_affine_srs, &domain_w);
 
         // Step 2: Compute [Z_V(tau)]_2.
         let order_v = num_witness_segments * segment_size;
-        let domain_v: Radix2EvaluationDomain<P::ScalarField> =
-            Radix2EvaluationDomain::<P::ScalarField>::new(order_v)
-                .ok_or(Error::FailedToCreateEvaluationDomain)?;
+        let domain_v = create_domain_with_generator(group_gen, order_v as u64)?;
+        // let domain_v: Radix2EvaluationDomain<P::ScalarField> =
+        //     Radix2EvaluationDomain::<P::ScalarField>::new(order_v)
+        //         .ok_or(Error::FailedToCreateEvaluationDomain)?;
 
         // Step 2: Compute [Z_K(tau)]_2.
         // K = {v^{is}, i \in [0, k - 1]}.

@@ -85,17 +85,17 @@ fn compute_quotients<P: Pairing>(
         - N (table size) is always pow2
         - Toeplitz multiplication will happen in 2 * N, so appending zero commitments on hs is not needed
     */
-    if poly_t.degree() >= domain.size() {
+    let domain_size = domain.size();
+    if poly_t.degree() >= domain_size {
         return Err(Error::InvalidPolynomialDegree(poly_t.degree()));
     }
 
     // Resize the polynomial coefficients to the domain size
     let mut poly_t_coeffs = poly_t.coeffs().to_vec();
-    poly_t_coeffs.resize(domain.size(), P::ScalarField::zero());
+    poly_t_coeffs.resize(domain_size, P::ScalarField::zero());
 
     let toeplitz = UpperToeplitz::from_coeff_slice(&poly_t_coeffs);
 
-    let domain_size = domain.size();
     let g1_affine_srs = g1_affine_srs.iter().take(domain_size).collect::<Vec<_>>();
     let mut g1_srs: Vec<P::G1> = g1_affine_srs.par_iter().map(|t| t.into_group()).collect();
     g1_srs.reverse();

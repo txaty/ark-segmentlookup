@@ -6,6 +6,7 @@ use ark_ff::{FftField, Field};
 use ark_poly::univariate::DensePolynomial;
 use ark_poly::{EvaluationDomain, Evaluations, Radix2EvaluationDomain};
 use ark_std::{One, Zero};
+use std::ops::Div;
 
 pub(crate) fn vanishing_poly_commitment_affine<C: CurveGroup>(
     affine_srs: &[C::Affine],
@@ -82,10 +83,6 @@ pub(crate) fn create_domain_with_generator<F: FftField>(
     // libfqfft uses > https://github.com/scipr-lab/libfqfft/blob/e0183b2cef7d4c5deb21a6eaf3fe3b586d738fe0/libfqfft/evaluation_domain/domains/basic_radix2_domain.tcc#L33
     if log_size_of_group > F::TWO_ADICITY {
         return Err(Error::InvalidEvaluationDomainSize(size as usize));
-    }
-
-    if group_gen.pow([size]) != F::one() {
-        return Err(Error::InvalidGroupGenerator);
     }
 
     // Check that it is indeed the 2^(log_size_of_group) root of unity.

@@ -1,6 +1,6 @@
 mod domain;
 mod error;
-mod kzg;
+pub mod kzg;
 mod lagrange_basis;
 pub mod multi_unity;
 pub mod prover;
