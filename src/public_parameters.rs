@@ -47,9 +47,9 @@ pub struct PublicParameters<P: Pairing> {
     pub(crate) g1_affine_list_lv: Vec<P::G1Affine>,
 
     // Domain W, V, and K.
-    pub(crate) domain_w: Radix2EvaluationDomain<P::ScalarField>,
-    pub(crate) domain_v: Radix2EvaluationDomain<P::ScalarField>,
-    pub(crate) domain_k: Radix2EvaluationDomain<P::ScalarField>,
+    pub domain_w: Radix2EvaluationDomain<P::ScalarField>,
+    pub domain_v: Radix2EvaluationDomain<P::ScalarField>,
+    pub domain_k: Radix2EvaluationDomain<P::ScalarField>,
 
     // Caulk Sub-protocol parameters.
     pub(crate) g1_affine_srs_caulk: Vec<P::G1Affine>,
