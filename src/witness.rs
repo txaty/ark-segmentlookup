@@ -55,6 +55,17 @@ impl<P: Pairing> Witness<P> {
         })
     }
 
+    pub fn new_with_padding(
+        pp: &PublicParameters<P>,
+        table: &Table<P>,
+        queried_segment_indices: &[usize],
+    ) -> Result<Self, Error> {
+        let mut queried_segment_indices = queried_segment_indices.to_vec();
+        queried_segment_indices.resize(pp.num_witness_segments, 0);
+
+        Self::new(pp, table, &queried_segment_indices)
+    }
+
     pub fn generate_statement(&self, g1_srs: &[P::G1Affine]) -> P::G1Affine {
         Kzg::<P::G1>::commit(g1_srs, &self.poly_f).into_affine()
     }
