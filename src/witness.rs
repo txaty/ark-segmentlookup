@@ -11,8 +11,8 @@ use crate::table::Table;
 pub struct Witness<P: Pairing> {
     pub(crate) num_witness_segments: usize,
     pub(crate) segment_size: usize,
-    pub(crate) poly_f: DensePolynomial<P::ScalarField>,
-    pub(crate) poly_eval_list_f: Vec<P::ScalarField>,
+    pub poly_f: DensePolynomial<P::ScalarField>,
+    pub poly_eval_list_f: Vec<P::ScalarField>,
     pub(crate) segment_indices: Vec<usize>,
 }
 
