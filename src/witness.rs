@@ -22,7 +22,25 @@ impl<P: Pairing> Witness<P> {
         table: &Table<P>,
         queried_segment_indices: &[usize],
     ) -> Result<Self, Error> {
-        if queried_segment_indices.len() != pp.num_witness_segments {
+        Self::create_witness(pp, table, queried_segment_indices, None)
+    }
+
+    pub fn new_with_padding(
+        pp: &PublicParameters<P>,
+        table: &Table<P>,
+        queried_segment_indices: &[usize],
+        padding_value: P::ScalarField,
+    ) -> Result<Self, Error> {
+        Self::create_witness(pp, table, queried_segment_indices, Some(padding_value))
+    }
+
+    fn create_witness(
+        pp: &PublicParameters<P>,
+        table: &Table<P>,
+        queried_segment_indices: &[usize],
+        padding_value: Option<P::ScalarField>,
+    ) -> Result<Self, Error> {
+        if queried_segment_indices.len() > pp.num_witness_segments {
             return Err(Error::InvalidNumberOfQueries(queried_segment_indices.len()));
         }
 
@@ -39,10 +57,15 @@ impl<P: Pairing> Witness<P> {
             }
         }
 
-        let poly_eval_list_f: Vec<P::ScalarField> = table_element_indices
+        let mut poly_eval_list_f: Vec<P::ScalarField> = table_element_indices
             .iter()
             .map(|&i| table.values[i])
             .collect();
+
+        if let Some(padding) = padding_value {
+            poly_eval_list_f.resize(pp.num_witness_segments * pp.segment_size, padding);
+        }
+
         let poly_coeff_list_f = pp.domain_v.ifft(&poly_eval_list_f);
         let poly_f = DensePolynomial::from_coefficients_vec(poly_coeff_list_f);
 
@@ -53,18 +76,6 @@ impl<P: Pairing> Witness<P> {
             poly_eval_list_f,
             segment_indices: queried_segment_indices.to_vec(),
         })
-    }
-
-    pub fn new_with_padding(
-        pp: &PublicParameters<P>,
-        table: &Table<P>,
-        queried_segment_indices: &[usize],
-        padding_value: P::ScalarField,
-    ) -> Result<Self, Error> {
-        let mut queried_segment_indices = queried_segment_indices.to_vec();
-        queried_segment_indices.resize(pp.num_witness_segments, padding_value);
-
-        Self::new(pp, table, &queried_segment_indices)
     }
 
     pub fn generate_statement(&self, g1_srs: &[P::G1Affine]) -> P::G1Affine {
