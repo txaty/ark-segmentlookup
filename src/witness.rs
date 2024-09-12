@@ -59,9 +59,10 @@ impl<P: Pairing> Witness<P> {
         pp: &PublicParameters<P>,
         table: &Table<P>,
         queried_segment_indices: &[usize],
+        padding_value: P::ScalarField,
     ) -> Result<Self, Error> {
         let mut queried_segment_indices = queried_segment_indices.to_vec();
-        queried_segment_indices.resize(pp.num_witness_segments, 0);
+        queried_segment_indices.resize(pp.num_witness_segments, padding_value);
 
         Self::new(pp, table, &queried_segment_indices)
     }
