@@ -1,4 +1,6 @@
-use crate::domain::{divide_by_vanishing_poly_checked, roots_of_unity};
+use crate::domain::{
+    divide_by_vanishing_poly_checked, divide_by_vanishing_poly_on_coset_in_place, roots_of_unity,
+};
 use crate::error::Error;
 use crate::kzg::Kzg;
 use crate::multi_unity::{multi_unity_prove, MultiUnityProof};
@@ -590,19 +592,6 @@ fn compute_polynomial_b_and_quotient<P: Pairing>(
         g1_affine_qb,
         g1_affine_b0,
     })
-}
-
-fn divide_by_vanishing_poly_on_coset_in_place<C: CurveGroup>(
-    domain: &Radix2EvaluationDomain<C::ScalarField>,
-    evaluations: &mut [C::ScalarField],
-) -> Result<(), Error> {
-    let vanishing_poly_eval = domain.evaluate_vanishing_polynomial(C::ScalarField::GENERATOR);
-    let inv_vanishing_poly_eval = vanishing_poly_eval
-        .inverse()
-        .ok_or(Error::FailedToInverseFieldElement)?;
-    ark_std::cfg_iter_mut!(evaluations).for_each(|eval| *eval *= &inv_vanishing_poly_eval);
-
-    Ok(())
 }
 
 fn compute_degree_check_g1_affine<P: Pairing>(
