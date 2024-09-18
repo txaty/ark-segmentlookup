@@ -33,7 +33,9 @@ pub struct PublicParameters<P: Pairing> {
     // [tau^i]_2 for i in 0..max*s.
     pub g2_affine_srs: Vec<P::G2Affine>,
     // [Z_W(tau)]_2.
-    pub(crate) g2_affine_zw: P::G2Affine,
+    pub g2_affine_zw: P::G2Affine,
+    // [Z_V(tau)]_2.
+    pub g2_affine_zv: P::G2Affine,
     // q_{i, 2} for i in 1..n*s.
     // The commitment of quotient polynomials Q_{i, 2} s.t.
     // L^W_i(X) * X = omega^i * L^W_i(X) + Z_W(X) * Q_{i, 2}(X).
@@ -106,6 +108,7 @@ impl<P: Pairing> PublicParameters<P> {
         let domain_v: Radix2EvaluationDomain<P::ScalarField> =
             Radix2EvaluationDomain::<P::ScalarField>::new(order_v)
                 .ok_or(Error::FailedToCreateEvaluationDomain)?;
+        let g2_affine_zv = vanishing_poly_commitment_affine::<P::G2>(&g2_affine_srs, &domain_v);
 
         // Step 2: Compute [Z_K(tau)]_2.
         // K = {v^{is}, i \in [0, k - 1]}.
@@ -181,6 +184,7 @@ impl<P: Pairing> PublicParameters<P> {
             g1_affine_srs,
             g2_affine_srs,
             g2_affine_zw,
+            g2_affine_zv,
             g1_affine_list_q2,
             g1_affine_list_q3,
             g1_affine_list_lw,
@@ -229,6 +233,7 @@ impl<P: Pairing> PublicParameters<P> {
         // let domain_v: Radix2EvaluationDomain<P::ScalarField> =
         //     Radix2EvaluationDomain::<P::ScalarField>::new(order_v)
         //         .ok_or(Error::FailedToCreateEvaluationDomain)?;
+        let g2_affine_zv = vanishing_poly_commitment_affine::<P::G2>(&g2_affine_srs, &domain_v);
 
         // Step 2: Compute [Z_K(tau)]_2.
         // K = {v^{is}, i \in [0, k - 1]}.
@@ -304,6 +309,7 @@ impl<P: Pairing> PublicParameters<P> {
             g1_affine_srs,
             g2_affine_srs,
             g2_affine_zw,
+            g2_affine_zv,
             g1_affine_list_q2,
             g1_affine_list_q3,
             g1_affine_list_lw,
