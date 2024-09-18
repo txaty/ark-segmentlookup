@@ -31,7 +31,7 @@ pub struct PublicParameters<P: Pairing> {
     // [tau^i]_1 for i in 0..max*s.
     pub g1_affine_srs: Vec<P::G1Affine>,
     // [tau^i]_2 for i in 0..max*s.
-    pub(crate) g2_affine_srs: Vec<P::G2Affine>,
+    pub g2_affine_srs: Vec<P::G2Affine>,
     // [Z_W(tau)]_2.
     pub(crate) g2_affine_zw: P::G2Affine,
     // q_{i, 2} for i in 1..n*s.
