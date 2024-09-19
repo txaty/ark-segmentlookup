@@ -1,4 +1,4 @@
-use crate::parameters::{K_MID, K_VEC, N_MID, N_VEC, S_MID, S_VEC};
+use crate::parameters::K_VEC;
 use ark_bn254::Bn254;
 use ark_ec::pairing::Pairing;
 use ark_segmentlookup::prover::prove;
@@ -62,21 +62,21 @@ fn end_to_end(n: usize, k: usize, s: usize) {
     assert!(res.is_ok());
 }
 fn main() {
-    for n in N_VEC {
-        let k = K_MID;
-        let s = S_MID;
-        end_to_end(n, k, s);
-    }
-
-    for s in S_VEC {
-        let n = N_MID;
-        let k = K_MID;
-        end_to_end(n, k, s);
-    }
+    // for n in N_VEC {
+    //     let k = K_MID;
+    //     let s = S_MID;
+    //     end_to_end(n, k, s);
+    // }
+    //
+    // for s in S_VEC {
+    //     let n = N_MID;
+    //     let k = K_MID;
+    //     end_to_end(n, k, s);
+    // }
 
     for k in K_VEC {
-        let n = N_MID;
-        let s = S_MID;
+        let n = 1024;
+        let s = 64;
         end_to_end(n, k, s);
     }
 }

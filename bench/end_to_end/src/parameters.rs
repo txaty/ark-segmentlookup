@@ -33,8 +33,8 @@ pub const S_VEC: [usize; 10] = [
     1 << 9,
     1 << 10,
 ];
-// Number of executed segments: from 2^0 to 2^7
-pub const K_VEC: [usize; 8] = [
+// Number of executed segments: from 2^0 to 2^10
+pub const K_VEC: [usize; 11] = [
     1 << 0,
     1 << 1,
     1 << 2,
@@ -43,6 +43,9 @@ pub const K_VEC: [usize; 8] = [
     1 << 5,
     1 << 6,
     1 << 7,
+    1 << 8,
+    1 << 9,
+    1 << 10,
 ];
 
 pub const N_MID: usize = 1 << 14;
