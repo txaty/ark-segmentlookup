@@ -4,8 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-ark-std = "0.4.0"
-ark-ec = "0.4.2"
+ark-std = { version = "0.4.0", features = ["parallel"] }
+ark-ec = { version = "0.4.2", features = ["parallel"] }
 ark-bn254 = "0.4.0"
 ark-segmentlookup = { path = "../.." }
-rayon = "1.10.0"
