@@ -142,7 +142,7 @@ pub fn verify<P: Pairing, R: Rng + ?Sized>(
         second_point_check(&proof, gamma, &pp.domain_k),
     ];
 
-    checks.iter().try_for_each(|check| check)?;
+    checks.into_iter().try_for_each(|check| check)?;
 
     Ok(())
 }

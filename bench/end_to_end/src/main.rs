@@ -1,4 +1,3 @@
-use crate::parameters::{K_MID, K_VEC, N_MID, N_VEC, S_MID, S_VEC};
 use ark_bn254::Bn254;
 use ark_ec::pairing::Pairing;
 use ark_segmentlookup::prover::prove;
@@ -13,9 +12,8 @@ mod parameters;
 
 fn rand_inputs<P: Pairing>(
     num_table_segments: usize,
-    num_witness_segments: usize,
     segment_size: usize,
-) -> (Vec<Vec<P::ScalarField>>, Vec<usize>) {
+) -> Vec<Vec<P::ScalarField>> {
     let mut rng = test_rng();
 
     let segments = {
@@ -31,16 +29,12 @@ fn rand_inputs<P: Pairing>(
         segments
     };
 
-    let queried_segment_indices: Vec<usize> = (0..num_witness_segments)
-        .map(|_| rng.next_u32() as usize % num_table_segments)
-        .collect();
-
-    (segments, queried_segment_indices)
+    segments
 }
 
 fn end_to_end(n: usize, k: usize, s: usize) {
     println!("n: {}, k: {}, s: {}", n, k, s);
-    let (segments, queried_segment_indices) = rand_inputs::<Bn254>(n, k, s);
+    let segments = rand_inputs::<Bn254>(n, s);
     let mut rng = &mut test_rng();
     let curr_time = std::time::Instant::now();
     let pp = PublicParameters::builder()
@@ -53,35 +47,49 @@ fn end_to_end(n: usize, k: usize, s: usize) {
     let tpp = table.preprocess(&pp).expect("Failed to preprocess table");
     println!("setup time: {:?} ms", curr_time.elapsed().as_millis());
 
-    let witness = Witness::new(&pp, &table, &queried_segment_indices).unwrap();
+    for i in 0..=10 {
+        let num_different_segments = 1 << i;
+        println!("No. Different Segments: {}", num_different_segments);
+        let mut queried_segment_indices = Vec::with_capacity(k);
+        (0..num_different_segments).for_each(|i| {
+            let num_indices = k / num_different_segments;
+            for _ in 0..num_indices {
+                queried_segment_indices.push(i);
+            }
+        });
 
-    let curr_time = std::time::Instant::now();
-    let proof = prove(&pp, &table, &tpp, &witness, rng).expect("Failed to prove");
-    println!("prove time: {:?} ms", curr_time.elapsed().as_millis());
+        let witness =
+            Witness::new(&pp, &tpp.adjusted_table_values, &queried_segment_indices).unwrap();
 
-    let statement = witness.generate_statement(&pp.g1_affine_srs);
+        let curr_time = std::time::Instant::now();
+        let proof = prove(&pp, &tpp, &witness, rng).expect("Failed to prove");
+        println!("prove time: {:?} ms", curr_time.elapsed().as_millis());
 
-    let curr_time = std::time::Instant::now();
-    let res = verify(&pp, &tpp, statement, &proof, rng);
-    println!("verify time: {:?} ms", curr_time.elapsed().as_millis());
-    assert!(res.is_ok());
+        let statement = witness.generate_statement(&pp.g1_affine_srs);
+
+        let curr_time = std::time::Instant::now();
+        let res = verify(&pp, &tpp, statement, &proof, rng);
+        println!("verify time: {:?} ms", curr_time.elapsed().as_millis());
+        assert!(res.is_ok());
+    }
 }
 fn main() {
-    for n in N_VEC {
-        let k = K_MID;
-        let s = S_MID;
-        end_to_end(n, k, s);
-    }
+    // for n in N_VEC {
+    //     let k = K_MID;
+    //     let s = S_MID;
+    //     end_to_end(n, k, s);
+    // }
+    //
+    // for s in S_VEC {
+    //     let n = N_MID;
+    //     let k = K_MID;
+    //     end_to_end(n, k, s);
+    // }
 
-    for s in S_VEC {
-        let n = N_MID;
-        let k = K_MID;
-        end_to_end(n, k, s);
-    }
-
-    for k in K_VEC {
-        let n = N_MID;
-        let s = S_MID;
-        end_to_end(n, k, s);
-    }
+    // for k in K_VEC {
+    //     let n = 1024;
+    //     let s = 64;
+    //     end_to_end(n, k, s);
+    // }
+    end_to_end(1024, 1024, 64);
 }
