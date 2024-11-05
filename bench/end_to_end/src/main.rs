@@ -1,4 +1,3 @@
-use crate::parameters::{K_MID, K_VEC, N_MID, N_VEC, S_MID, S_VEC};
 use ark_bn254::Bn254;
 use ark_ec::pairing::Pairing;
 use ark_segmentlookup::prover::prove;
@@ -8,8 +7,6 @@ use ark_segmentlookup::verifier::verify;
 use ark_segmentlookup::witness::Witness;
 use ark_std::rand::RngCore;
 use ark_std::{test_rng, UniformRand};
-
-mod parameters;
 
 fn rand_inputs<P: Pairing>(
     num_table_segments: usize,
@@ -66,21 +63,14 @@ fn end_to_end(n: usize, k: usize, s: usize) {
     assert!(res.is_ok());
 }
 fn main() {
-    for n in N_VEC {
-        let k = K_MID;
-        let s = S_MID;
-        end_to_end(n, k, s);
-    }
+    const NUM_SEGMENT_POWERS: [usize; 7] = [18, 19, 20, 21, 22, 23, 24];
+    const SEGMENT_SIZE: usize = 1;
 
-    for s in S_VEC {
-        let n = N_MID;
-        let k = K_MID;
-        end_to_end(n, k, s);
-    }
+    const WITNESS_SIZE: usize = 1024;
 
-    for k in K_VEC {
-        let n = N_MID;
-        let s = S_MID;
-        end_to_end(n, k, s);
+    for num_segment_power in NUM_SEGMENT_POWERS {
+        println!("num_segment_power: {}", num_segment_power);
+        let num_segments = 2_i32.pow(num_segment_power as u32);
+        end_to_end(num_segments as usize, WITNESS_SIZE, SEGMENT_SIZE);
     }
 }
