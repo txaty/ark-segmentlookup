@@ -63,7 +63,7 @@ fn end_to_end(n: usize, k: usize, s: usize) {
     assert!(res.is_ok());
 }
 fn main() {
-    const NUM_SEGMENT_POWERS: [usize; 7] = [18, 19, 20, 21, 22, 23, 24];
+    const NUM_SEGMENT_POWERS: [usize; 9] = [2, 3, 18, 19, 20, 21, 22, 23, 24];
     const SEGMENT_SIZE: usize = 1;
 
     const WITNESS_SIZE: usize = 1024;
