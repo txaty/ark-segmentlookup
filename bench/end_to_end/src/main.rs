@@ -35,6 +35,8 @@ fn rand_inputs<P: Pairing>(
     (segments, queried_segment_indices)
 }
 
+const ITERATIONS: usize = 5;
+
 fn end_to_end(
     num_table_segments: usize,
     num_witness_segments: usize,
@@ -66,14 +68,16 @@ fn end_to_end(
     let witness = Witness::new(&pp, &tpp.adjusted_table_values, &queried_segment_indices).unwrap();
     let statement = witness.generate_statement(&pp.g1_affine_srs);
 
-    let curr_time = std::time::Instant::now();
-    let proof = prove(&pp, &tpp, &witness, statement, rng).expect("Failed to prove");
-    println!("prove time: {:?} ms", curr_time.elapsed().as_millis());
+    for _ in 0..ITERATIONS {
+        let curr_time = std::time::Instant::now();
+        let proof = prove(&pp, &tpp, &witness, statement, rng).expect("Failed to prove");
+        println!("prove time: {:?} ms", curr_time.elapsed().as_millis());
 
-    let curr_time = std::time::Instant::now();
-    let res = verify(&pp, &tpp, statement, &proof, rng);
-    println!("verify time: {:?} ms", curr_time.elapsed().as_millis());
-    assert!(res.is_ok());
+        let curr_time = std::time::Instant::now();
+        let res = verify(&pp, &tpp, statement, &proof, rng);
+        println!("verify time: {:?} ms", curr_time.elapsed().as_millis());
+        assert!(res.is_ok());
+    }
 }
 fn main() {
     // const NUM_SEGMENT_POWERS: [usize; 13] = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
