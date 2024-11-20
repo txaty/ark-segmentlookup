@@ -76,14 +76,16 @@ fn end_to_end(
     assert!(res.is_ok());
 }
 fn main() {
-    const NUM_SEGMENT_POWERS: [usize; 13] = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 24];
+    // const NUM_SEGMENT_POWERS: [usize; 13] = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+    // 13, 24];
+    let num_segment_powers = (2..=24);
     const SEGMENT_SIZE: usize = 64;
 
     const WITNESS_SIZE: usize = 1024;
 
     const NUM_DIFFERENT_SEGMENT_CHOSEN: usize = 4;
 
-    for num_segment_power in NUM_SEGMENT_POWERS {
+    for num_segment_power in num_segment_powers {
         println!("num_segment_power: {}", num_segment_power);
         let num_segments = 2_i32.pow(num_segment_power as u32);
         end_to_end(
