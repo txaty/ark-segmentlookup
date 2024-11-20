@@ -36,7 +36,10 @@ fn rand_inputs<P: Pairing>(
 }
 
 fn end_to_end(n: usize, k: usize, s: usize) {
-    println!("n: {}, k: {}, s: {}", n, k, s);
+    println!(
+        "num table segments: {}, num witness segments: {}, segment size: {}",
+        n, k, s
+    );
     let (segments, queried_segment_indices) = rand_inputs::<Bn254>(n, k, s);
     let mut rng = &mut test_rng();
     let curr_time = std::time::Instant::now();
@@ -63,8 +66,8 @@ fn end_to_end(n: usize, k: usize, s: usize) {
     assert!(res.is_ok());
 }
 fn main() {
-    const NUM_SEGMENT_POWERS: [usize; 13] = [2, 3, 4, 5, 16, 17, 18, 19, 20, 21, 22, 23, 24];
-    const SEGMENT_SIZE: usize = 1;
+    const NUM_SEGMENT_POWERS: [usize; 13] = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 24];
+    const SEGMENT_SIZE: usize = 64;
 
     const WITNESS_SIZE: usize = 1024;
 
