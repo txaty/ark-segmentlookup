@@ -78,7 +78,7 @@ fn end_to_end(
 fn main() {
     // const NUM_SEGMENT_POWERS: [usize; 13] = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
     // 13, 24];
-    let num_segment_powers = (2..=24);
+    let num_segment_powers = 2..=24;
     const SEGMENT_SIZE: usize = 64;
 
     const WITNESS_SIZE: usize = 1024;
