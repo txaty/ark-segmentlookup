@@ -5,13 +5,13 @@ use ark_segmentlookup::public_parameters::PublicParameters;
 use ark_segmentlookup::table::Table;
 use ark_segmentlookup::verifier::verify;
 use ark_segmentlookup::witness::Witness;
-use ark_std::rand::RngCore;
 use ark_std::{test_rng, UniformRand};
 
 fn rand_inputs<P: Pairing>(
     num_table_segments: usize,
     num_witness_segments: usize,
     segment_size: usize,
+    num_different_segment_chosen: usize,
 ) -> (Vec<Vec<P::ScalarField>>, Vec<usize>) {
     let mut rng = test_rng();
 
@@ -29,24 +29,34 @@ fn rand_inputs<P: Pairing>(
     };
 
     let queried_segment_indices: Vec<usize> = (0..num_witness_segments)
-        .map(|_| rng.next_u32() as usize % num_table_segments)
+        .map(|i| i % num_different_segment_chosen)
         .collect();
 
     (segments, queried_segment_indices)
 }
 
-fn end_to_end(n: usize, k: usize, s: usize) {
+fn end_to_end(
+    num_table_segments: usize,
+    num_witness_segments: usize,
+    segment_size: usize,
+    num_different_segment_chosen: usize,
+) {
     println!(
         "num table segments: {}, num witness segments: {}, segment size: {}",
-        n, k, s
+        num_table_segments, num_witness_segments, segment_size
     );
-    let (segments, queried_segment_indices) = rand_inputs::<Bn254>(n, k, s);
+    let (segments, queried_segment_indices) = rand_inputs::<Bn254>(
+        num_table_segments,
+        num_witness_segments,
+        segment_size,
+        num_different_segment_chosen,
+    );
     let mut rng = &mut test_rng();
     let curr_time = std::time::Instant::now();
     let pp = PublicParameters::builder()
-        .num_table_segments(n)
-        .num_witness_segments(k)
-        .segment_size(s)
+        .num_table_segments(num_table_segments)
+        .num_witness_segments(num_witness_segments)
+        .segment_size(segment_size)
         .build(&mut rng)
         .expect("Failed to setup public parameters");
     let table = Table::<Bn254>::new(&pp, segments).expect("Failed to create table");
@@ -71,9 +81,16 @@ fn main() {
 
     const WITNESS_SIZE: usize = 1024;
 
+    const NUM_DIFFERENT_SEGMENT_CHOSEN: usize = 4;
+
     for num_segment_power in NUM_SEGMENT_POWERS {
         println!("num_segment_power: {}", num_segment_power);
         let num_segments = 2_i32.pow(num_segment_power as u32);
-        end_to_end(num_segments as usize, WITNESS_SIZE, SEGMENT_SIZE);
+        end_to_end(
+            num_segments as usize,
+            WITNESS_SIZE,
+            SEGMENT_SIZE,
+            NUM_DIFFERENT_SEGMENT_CHOSEN,
+        );
     }
 }
