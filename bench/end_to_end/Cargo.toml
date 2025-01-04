@@ -7,4 +7,5 @@ edition = "2021"
 ark-std = { version = "0.5.0", features = ["parallel"] }
 ark-ec = { version = "0.5.0", features = ["parallel"] }
 ark-bn254 = "0.5.0"
+rand = "0.8.5"
 ark-segmentlookup = { path = "../.." }
